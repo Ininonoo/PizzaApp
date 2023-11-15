@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,12 +24,36 @@ class LoginActivity : AppCompatActivity() {
 
         //event button login
         btnLogin.setOnClickListener {
-            val intentLogin = Intent(this@LoginActivity, MainActivity::class.java)
-            startActivity(intentLogin)
-        //login chek
-        fun checkLogin(email:String, password:String):Boolean{
-            val colums = arrayOf()
+            val databaseHelper = DatabaseHelper(this)
+
+            //check data
+            val data:String = databaseHelper.checkData("nono@gmail.com")
+            Toast.makeText(this@LoginActivity, "Result: " + data,
+            Toast.LENGTH_SHORT).show()
+            if (data== null){
+                //insert data
+                databaseHelper.addAccount("nono@gmail.com",
+                "nono", "cashier","amikom")
+            }
+
+            val email = txtUsername.text.toString().trim()
+            val password = txtPassword.text.toString().trim()
+
+            //check login
+            val result:Boolean = databaseHelper.checkLogin(email, password)
+            if (result == true){
+                Toast.makeText(this@LoginActivity,"Login succes",
+                Toast.LENGTH_SHORT).show()
+                val intentLogin =Intent (this@LoginActivity,
+                MainActivity::class.java)
+                startActivity(intentLogin)
+
+            }else{
+                Toast.makeText(this@LoginActivity, "Login Failed, Tray Again !!",
+                Toast.LENGTH_SHORT).show()
+            }
         }
-        }
+
+
     }
 }
